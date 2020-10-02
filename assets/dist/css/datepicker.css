@@ -1,0 +1,67 @@
+.js-datepicker__picker {
+  display: grid;
+  grid-template-columns: max-content;
+  grid-template-rows: max-content;
+  grid-template-areas: "year" "heading" "calendar-header" "calendar";
+}
+.js-datepicker__year {
+  height: 44px;
+}
+.js-datepicker__header {
+  grid-area: heading;
+  display: grid;
+  grid-template-columns: max-content auto max-content;
+  grid-template-rows: max-content;
+  grid-template-areas: "prev month next";
+  padding: 8px;
+  height: 44px;
+}
+.js-datepicker__prev {
+  grid-area: prev;
+  cursor: pointer;
+}
+.js-datepicker__month {
+  grid-area: month;
+  text-align: center;
+}
+.js-datepicker__next {
+  grid-area: next;
+  cursor: pointer;
+}
+
+.js-datepicker__calendar-header {
+  grid-area: calendar-header;
+  display: grid;
+  grid-template-columns: repeat(7, 44px);
+  grid-template-rows: max-content;
+}
+.js-datepicker__calendar-header div {
+  width: 44px;
+  height: 44px;
+  text-align: center;
+}
+
+.js-datepicker__calendar {
+  grid-area: calendar;
+  display: grid;
+  grid-template-columns: repeat(7, 44px);
+  grid-template-rows: repeat(6, 44px);
+}
+.js-datepicker__calendar div {
+  width: 44px;
+  height: 44px;
+  text-align: center;
+  line-height: 44px;
+}
+.js-datepicker__calendar div[notInMonth] {
+  color: lightgray;
+}
+.js-datepicker__calendar div[js-datepicker--selected] {
+  background-color: lightpink;
+}
+.js-datepicker__calendar div:hover {
+  background-color: lightgray;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=datepicker.css.map */

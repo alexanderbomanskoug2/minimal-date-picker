@@ -1,0 +1,86 @@
+.js-datepicker {
+    &__picker {
+        display: grid;
+        grid-template-columns: max-content;
+        grid-template-rows: max-content;
+        grid-template-areas:
+            "year"
+            "heading"
+            "calendar-header"
+            "calendar"
+        ;
+    }
+
+    &__year {
+        height: 44px;
+    }
+
+    &__header {
+        grid-area: heading;
+        display: grid;
+        grid-template-columns: max-content auto max-content;
+        grid-template-rows: max-content;
+        grid-template-areas:
+            "prev month next"
+        ;
+        padding: 8px;
+        height: 44px;
+    }
+
+    &__prev {
+        grid-area: prev;
+        cursor: pointer;
+    }
+
+    &__month {
+        grid-area: month;
+        text-align: center;
+    }
+
+    &__next {
+        grid-area: next;
+        cursor: pointer;
+    }
+}
+
+
+
+.js-datepicker__calendar-header {
+    grid-area: calendar-header;
+    display: grid;
+    grid-template-columns: repeat(7, 44px);
+    grid-template-rows: max-content;
+
+    div {
+        width: 44px;
+        height: 44px;
+        text-align: center;
+    }
+}
+
+.js-datepicker__calendar {
+    grid-area: calendar;
+    display: grid;
+    grid-template-columns: repeat(7, 44px);
+    grid-template-rows: repeat(6, 44px);
+
+    div {
+        width: 44px;
+        height: 44px;
+        text-align: center;
+        line-height: 44px;
+
+        &[notInMonth] {
+            color: lightgray;
+        }
+
+        &[js-datepicker--selected] {
+            background-color: lightpink
+        }
+
+        &:hover {
+            background-color: lightgray;
+            cursor: pointer
+        }
+    }
+}
