@@ -1,5 +1,11 @@
+import HelpersClass from './helpers';
+const Helpers = new HelpersClass();
+
 export default class DatePicker {
-    constructor(months = false, days = false) {
+    constructor(datepicker = false, months = false, days = false) {
+        if(!datepicker) {throw 'Parameter is not a number!';}
+        
+        this.DATEPICKER = datepicker;
         this.BASE       = "js-datepicker";
         this.PICKER     = `.${this.BASE}__picker`;
         this.YEAR       = `${this.BASE}__year`;
@@ -8,7 +14,7 @@ export default class DatePicker {
         this.CALENDAR   = `${this.BASE}__calendar`
         this.PREVMONTH  = `${this.BASE}__prev`;
         this.NEXTMONTH  = `${this.BASE}__next`;
-        
+
         this.daysNames = days ? days : [
             "Monday",
             "Tuesday",
@@ -19,7 +25,6 @@ export default class DatePicker {
             "Sunday"
         ];
 
-        console.log(days)
         this.monthsNames = months ? months : [
             "January",
             "February",
@@ -35,52 +40,48 @@ export default class DatePicker {
             "December"
         ];
 
-        this.getDatepickers().forEach(datepicker => {
-            this.addMonthListeners(datepicker);
-            this.addYearListener(datepicker);
-            this.appendDayElements(datepicker);
-            this.appendDateToDayElements(datepicker);
-            this.addCalendarListeners(datepicker);
-            this.appendDayHeaders(datepicker);
-            this.setStartingValues(datepicker);
+        Helpers.daysNames   = this.daysNames;
+        Helpers.monthsNames = this.monthsNames;
 
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type == "attributes") {
-                        if (mutation.attributeName === this.MONTH) {
-                            let currentYear = parseInt(datepicker.getAttribute(this.YEAR));
-                            let currentMonth = parseInt(datepicker.getAttribute(this.MONTH));
-                            this.appendDateToDayElements(datepicker, new Date(`${currentYear}/${currentMonth+1}/1`));
-                        }
+        this.addMonthListeners();
+        this.addYearListener();
+        this.appendDayElements();
+        this.appendDateToDayElements();
+        this.addCalendarListeners();
+        this.appendDayHeaders();
+        this.setStartingValues();
 
-                        if (mutation.attributeName === this.YEAR) {
-                            let currentYear = parseInt(datepicker.getAttribute(this.YEAR));
-                            datepicker.querySelector(`.${this.YEAR}`).value = currentYear;  
-                        }
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type == "attributes") {
+                    if (mutation.attributeName === this.MONTH) {
+                        let currentYear = parseInt(this.DATEPICKER.getAttribute(this.YEAR));
+                        let currentMonth = parseInt(this.DATEPICKER.getAttribute(this.MONTH));
+                        this.appendDateToDayElements(new Date(`${currentYear}/${currentMonth+1}/1`));
                     }
-                });
-            });
-              
-            observer.observe(datepicker, {
-                attributes: true //configure it to listen to attribute changes
-            });
 
-        })
-    }
-
-    getDatepickers() {
-        return document.querySelectorAll(`.${this.BASE}__picker`);
+                    if (mutation.attributeName === this.YEAR) {
+                        let currentYear = parseInt(this.DATEPICKER.getAttribute(this.YEAR));
+                        this.DATEPICKER.querySelector(`.${this.YEAR}`).value = currentYear;  
+                    }
+                }
+            });
+        });
+            
+        observer.observe(this.DATEPICKER, {
+            attributes: true //configure it to listen to attribute changes
+        });
     }
 
     //Data building
-    setStartingValues(datepicker) {
-        const day = this.getCurrentDay();
+    setStartingValues() {
+        const day = Helpers.getCurrentDay();
         
-        datepicker.setAttribute(this.MONTH, this.getCurrentMonth());
-        datepicker.setAttribute(this.YEAR, this.getCurrentYear());
-        datepicker.querySelector(`.${this.MONTH}`).innerHTML = this.getMonthName(this.getCurrentMonth());
-        datepicker.querySelector(`.${this.YEAR}`).value = this.getCurrentYear();
-        datepicker.querySelector(`[${this.DAY} = "${day}"]`).setAttribute('js-datepicker--selected', true);
+        this.DATEPICKER.setAttribute(this.MONTH, Helpers.getCurrentMonth());
+        this.DATEPICKER.setAttribute(this.YEAR, Helpers.getCurrentYear());
+        this.DATEPICKER.querySelector(`.${this.MONTH}`).innerHTML = Helpers.getMonthName(Helpers.getCurrentMonth());
+        this.DATEPICKER.querySelector(`.${this.YEAR}`).value = Helpers.getCurrentYear();
+        this.DATEPICKER.querySelector(`[${this.DAY} = "${day}"]`).setAttribute('js-datepicker--selected', true);
     }
 
     
@@ -88,11 +89,11 @@ export default class DatePicker {
      * Add titles to each column
      * @param  {} datepicker
      */
-    appendDayHeaders(datepicker) {
+    appendDayHeaders() {
         for (let iteration = 0; iteration < 7; iteration++) {
             let day = document.createElement("div");
-            day.innerHTML = this.getWeekday(iteration).substring(0,2);
-            datepicker.querySelector('.js-datepicker__calendar-header').appendChild(day);  
+            day.innerHTML = Helpers.getWeekday(iteration).substring(0,2);
+            this.DATEPICKER.querySelector('.js-datepicker__calendar-header').appendChild(day);  
         }
     }
 
@@ -100,22 +101,22 @@ export default class DatePicker {
      * Add divs for days in calendar
      * @param  {} datepicker
      */
-    appendDayElements(datepicker) {
+    appendDayElements() {
         for (let iteration = 0; iteration < 42; iteration++) {
             let day = document.createElement("div");
             day.setAttribute("js-datepicker--day--index", iteration);
             day.setAttribute(this.DAY, "");
-            datepicker.querySelector(`[${this.CALENDAR}]`).appendChild(day);  
+            this.DATEPICKER.querySelector(`[${this.CALENDAR}]`).appendChild(day);  
         }
     }
 
-    appendDateToDayElements(datepicker, date = false) {
-        let startIndex = this.getMonthStartDayIndex(date) -1;
-        let monthLength = this.getMonthLength(date)
+    appendDateToDayElements(date = false) {
+        let startIndex = Helpers.getMonthStartDayIndex(date) -1;
+        let monthLength = Helpers.getMonthLength(date)
         let dateInt = 1
 
         for (let iteration = 0; iteration < 42; iteration++) {
-            let elm = datepicker.querySelector(`[js-datepicker--day--index="${iteration}"]`);
+            let elm = this.DATEPICKER.querySelector(`[js-datepicker--day--index="${iteration}"]`);
             if (iteration  >= startIndex && dateInt <= monthLength) {
                 elm.innerHTML = dateInt;
                 elm.setAttribute(this.DAY, dateInt);
@@ -129,57 +130,57 @@ export default class DatePicker {
     }
 
     //Runtime preparations
-    addYearListener(datepicker) {
-        datepicker.querySelector(`[${this.YEAR}]`).addEventListener("change", (e) => {
-            this.updateYear(datepicker, false, false, e.target.value);
+    addYearListener() {
+        this.DATEPICKER.querySelector(`[${this.YEAR}]`).addEventListener("change", (e) => {
+            this.updateYear(false, false, e.target.value);
         });
     }
 
-    addMonthListeners(datepicker) {
-        datepicker.querySelector(`[${this.PREVMONTH}]`).addEventListener("click", () => {
-            this.updateMonth(datepicker, true)
+    addMonthListeners() {
+        this.DATEPICKER.querySelector(`[${this.PREVMONTH}]`).addEventListener("click", () => {
+            this.updateMonth(true)
         })
 
-        datepicker.querySelector(`[${this.NEXTMONTH}]`).addEventListener("click", () => {
-            this.updateMonth(datepicker, false, true)
+        this.DATEPICKER.querySelector(`[${this.NEXTMONTH}]`).addEventListener("click", () => {
+            this.updateMonth(false, true)
         })
     }
 
-    addCalendarListeners(datepicker) {
-        let days = datepicker.querySelectorAll(`[${this.DAY}]`);
+    addCalendarListeners() {
+        let days = this.DATEPICKER.querySelectorAll(`[${this.DAY}]`);
         days.forEach((day) => {
             day.addEventListener("click", (e) => {
                 if(!e.target.hasAttribute('disabled')) {
-                    let elm = datepicker.querySelector(`[js-datepicker--selected]`)
+                    let elm = this.DATEPICKER.querySelector(`[js-datepicker--selected]`)
                     if (elm) {
                         elm.removeAttribute("js-datepicker--selected")
                     }
         
                     e.target.setAttribute('js-datepicker--selected', true);
-                    this.updateFieldValue(datepicker)
+                    this.updateFieldValue()
                 }
                 
             })
         })
     }
 
-    updateFieldValue(datepicker) {
+    updateFieldValue() {
         let arr = [
-            parseInt(datepicker.getAttribute(this.YEAR)),
-            parseInt(datepicker.getAttribute(this.MONTH)) +1,
-            datepicker.querySelector("[js-datepicker--selected]").innerHTML
+            parseInt(this.DATEPICKER.getAttribute(this.YEAR)),
+            parseInt(this.DATEPICKER.getAttribute(this.MONTH)) +1,
+            this.DATEPICKER.querySelector("[js-datepicker--selected]").innerHTML
         ]
 
         const builtDate = arr.join('/');
         const timestamp = new Date(builtDate)
 
-        document.querySelector(`[js-datepicker='${datepicker.getAttribute('js-datepicker')}']`).value = builtDate;
-        document.querySelector(`[js-datepicker='${datepicker.getAttribute('js-datepicker')}']`).setAttribute('value', Date.parse(timestamp));
+        document.querySelector(`[js-datepicker='${this.DATEPICKER.getAttribute('js-datepicker')}']`).value = builtDate;
+        document.querySelector(`[js-datepicker='${this.DATEPICKER.getAttribute('js-datepicker')}']`).setAttribute('value', Date.parse(timestamp));
     }
 
     //Runtime functions
-    updateMonth(datepicker, sub = false, add = false) {
-        let currentMonth = parseInt(datepicker.getAttribute(this.MONTH));
+    updateMonth(sub = false, add = false) {
+        let currentMonth = parseInt(this.DATEPICKER.getAttribute(this.MONTH));
         let newMonth;
         let updateYear;
 
@@ -193,102 +194,43 @@ export default class DatePicker {
             updateYear = currentMonth === 0 ? true : false;
         }
 
-        datepicker.setAttribute(this.MONTH, newMonth);
-        this.updateMonthTitle(datepicker);
-        this.resetDay(datepicker)
+        this.DATEPICKER.setAttribute(this.MONTH, newMonth);
+        this.updateMonthTitle();
+        this.resetDay()
 
-        if (updateYear) this.updateYear(datepicker, sub, add);
+        if (updateYear) this.updateYear(sub, add);
     }
 
-    updateMonthTitle(datepicker) {
-        let currentMonth = parseInt(datepicker.getAttribute(this.MONTH));
-        datepicker.querySelector(`.${this.MONTH}`).innerHTML = this.getMonthName(currentMonth)
+    updateMonthTitle() {
+        let currentMonth = parseInt(this.DATEPICKER.getAttribute(this.MONTH));
+        this.DATEPICKER.querySelector(`.${this.MONTH}`).innerHTML = Helpers.getMonthName(currentMonth)
     }
 
-    updateYear(datepicker, sub = false, add = false, specificYear = false) {
+    updateYear(sub = false, add = false, specificYear = false) {
         if (specificYear) {
-            datepicker.setAttribute(this.YEAR, specificYear);
-            this.updateFieldValue(datepicker)
+            this.DATEPICKER.setAttribute(this.YEAR, specificYear);
+            this.updateFieldValue()
             return
         }
 
-        let currentYear = parseInt(datepicker.getAttribute(this.YEAR));
+        let currentYear = parseInt(this.DATEPICKER.getAttribute(this.YEAR));
 
         if (add) {
-            datepicker.setAttribute(this.YEAR, currentYear +1);
+            this.DATEPICKER.setAttribute(this.YEAR, currentYear +1);
             return
         }
 
         if (sub) {
-            datepicker.setAttribute(this.YEAR, currentYear -1);
+            this.DATEPICKER.setAttribute(this.YEAR, currentYear -1);
             return
         }
     }
 
-    resetDay(datepicker) {
-        let elm = datepicker.querySelector(`[js-datepicker--selected]`)
+    resetDay() {
+        let elm = this.DATEPICKER.querySelector(`[js-datepicker--selected]`)
 
         if (elm) {
             elm.removeAttribute("js-datepicker--selected")
         }
-    }
-
-    //Helper functions
-    getMonthStartDayIndex(d = false) {
-        d = d ? d : new Date();
-        let index = new Date(d.getFullYear(d), d.getMonth(d), 1).getDay();
-        
-        return index === 0 ? index = 7 : index;
-    }
-
-    /**
-     * @param  {Date} d A date object
-     * @return  {Int} Days in month
-     */
-    getMonthLength(d = false) {
-        d = d ? d : new Date();
-        return new Date(d.getFullYear(d), d.getMonth(d) + 1, 0).getDate();
-    }
-
-    /**
-     * @return  {Int} Current Day
-     */
-    getCurrentDay() {
-        const d = new Date();
-        return d.getDate();
-    }
-
-    /**
-     * @return  {Int} Current month
-     */
-    getCurrentMonth() {
-        const d = new Date();
-        return d.getMonth();
-    }
-
-    /**
-     * @return {Int} Current year
-     */
-    getCurrentYear() {
-        const d = new Date();
-        return d.getFullYear();
-    }
-    
-    /**
-     * Returns name of month
-     * @param  {} month
-     * @return {String} Name of month
-     */
-    getMonthName(month) {
-        return this.monthsNames[month];
-    }
-
-    /**
-     * Returns name of day of week
-     * @param  {} day
-     * @return String with day of week
-     */
-    getWeekday(day) {
-        return this.daysNames[day];
     }
 }
