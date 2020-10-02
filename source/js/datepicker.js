@@ -1,4 +1,4 @@
-class DatePicker {
+export default class DatePicker {
     constructor(months = false, days = false) {
         this.BASE       = "js-datepicker";
         this.PICKER     = `.${this.BASE}__picker`;
@@ -292,27 +292,3 @@ class DatePicker {
         return this.daysNames[day];
     }
 }
-const DP = new DatePicker(
-    [
-        "Januari",
-        "Feburari",
-        "Mars",
-        "April",
-        "Maj",
-        "Juni",
-        "Juli",
-        "Augusti",
-        "September",
-        "Oktober",
-        "November",
-        "December"
-    ], [
-        "Måndag",
-        "Tisdag",
-        "Onsdag",
-        "Torsdag",
-        "Fredag",
-        "Lördag",
-        "Söndag"
-    ]
-);
