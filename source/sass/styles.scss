@@ -75,7 +75,10 @@
         }
 
         &[js-datepicker--selected] {
-            background-color: lightpink
+            background-color: lightpink;
+            &:hover {
+                background-color: darken(lightpink, 10%);
+            }
         }
 
         &:hover {
