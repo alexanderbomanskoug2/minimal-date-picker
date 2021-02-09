@@ -7,3 +7,4 @@ To Do:
  - [ ] Add modal functionality
  - [ ] More basic design
  - [ ] Potentially add css variables for colors
+ - [ ] Add check for when returning to month

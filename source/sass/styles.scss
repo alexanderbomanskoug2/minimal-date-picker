@@ -72,6 +72,10 @@
 
         &[notInMonth] {
             color: lightgray;
+            &:hover {
+                background-color: none;
+                cursor: not-allowed;
+            }
         }
 
         &[js-datepicker--selected] {

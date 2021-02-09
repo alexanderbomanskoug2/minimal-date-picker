@@ -113,18 +113,36 @@ export default class DatePicker {
     appendDateToDayElements(date = false) {
         let startIndex = Helpers.getMonthStartDayIndex(date) -1;
         let monthLength = Helpers.getMonthLength(date)
-        let dateInt = 1
+        let dateInt = 1;
+        let rest = 1;
 
         for (let iteration = 0; iteration < 42; iteration++) {
             let elm = this.DATEPICKER.querySelector(`[js-datepicker--day--index="${iteration}"]`);
-            if (iteration  >= startIndex && dateInt <= monthLength) {
+            elm.innerHTML = '';
+            elm.setAttribute(this.DAY, false);
+            elm.removeAttribute('disabled');
+            elm.removeAttribute('notInMonth');
+
+            if(iteration < startIndex) {
+                elm.innerHTML = 'X';
+                elm.setAttribute('disabled', true);
+                elm.setAttribute('notInMonth', true);
+            }
+
+            if (iteration >= startIndex && dateInt <= monthLength) {
                 elm.innerHTML = dateInt;
                 elm.setAttribute(this.DAY, dateInt);
-                dateInt++;
-                startIndex++;
-            } else {
+            } 
+            
+            if (dateInt > monthLength) {
+                elm.innerHTML = rest;
                 elm.setAttribute('disabled', true);
-                elm.innerHTML = "";
+                elm.setAttribute('notInMonth', true);
+                rest++;
+            }
+
+            if(dateInt > monthLength || (iteration >= startIndex && dateInt <= monthLength)) {
+                dateInt++;
             }
         }
     }
